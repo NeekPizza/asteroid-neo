@@ -31,7 +31,3 @@ export default function App() {
     </ThemeProvider>
   );
 }
-
-function About() {
-  return <h2>About</h2>;
-}
