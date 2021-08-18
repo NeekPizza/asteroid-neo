@@ -1,14 +1,17 @@
 import { useState } from "react";
 import axios from "axios";
-import format from "utils/formatDate";
+import formatDate from "utils/formatDate";
 import Accordion from "@material-ui/core/Accordion";
 import AccordionSummary from "@material-ui/core/AccordionSummary";
+import AccordionDetails from "@material-ui/core/AccordionDetails";
 import Button from "@material-ui/core/Button";
 import CircularProgress from "@material-ui/core/CircularProgress";
 import DatePicker from "components/UI/DatePicker";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import Grid from "@material-ui/core/Grid";
 import { makeStyles } from "@material-ui/core/styles";
+import Asteroid from "typings/Asteroid";
+import DenseTable from "components/UI/DenseTable";
 
 const useStyles = makeStyles({
   accordionContainer: {
@@ -36,18 +39,20 @@ const Home = () => {
   };
 
   const [fetchingData, setFetchingData] = useState<boolean>(false);
-  const [neos, setNeos] = useState<{ [key: string]: string } | null>(null);
-
-  console.log(neos);
+  const [neos, setNeos] = useState<{ [key: string]: Asteroid[] } | null>(null);
 
   const handleFetchNeos = async () => {
     setFetchingData(true);
+    setNeos(null);
     try {
       const response = await axios.get(
-        `https://api.nasa.gov/neo/rest/v1/feed?start_date=${format(
-          selectedStartDate
+        `https://api.nasa.gov/neo/rest/v1/feed?start_date=${formatDate(
+          selectedStartDate,
+          "yyyy-MM-dd"
         )}${
-          selectedEndDate ? `&end_date=${format(selectedEndDate)}` : null
+          selectedEndDate
+            ? `&end_date=${formatDate(selectedEndDate, "yyyy-MM-dd")}`
+            : null
         }&api_key=${process.env.REACT_APP_NASA_API_KEY}`
       );
       setNeos(response.data.near_earth_objects);
@@ -99,15 +104,18 @@ const Home = () => {
       <Grid container>
         {neos && (
           <div className={classes.accordionContainer}>
-            {Object.keys(neos).map((key: string, index) => (
-              <Accordion>
+            {Object.keys(neos).map((key: string) => (
+              <Accordion key={key}>
                 <AccordionSummary
                   expandIcon={<ExpandMoreIcon />}
                   aria-controls='panel1a-content'
                   id='panel1a-header'
                 >
-                  <p>{key}</p>
+                  <p>{formatDate(new Date(key), "MM/dd/yyyy")}</p>
                 </AccordionSummary>
+                <AccordionDetails>
+                  <DenseTable rows={neos[key]} />
+                </AccordionDetails>
               </Accordion>
             ))}
           </div>
