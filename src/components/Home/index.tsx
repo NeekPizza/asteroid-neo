@@ -104,20 +104,22 @@ const Home = () => {
       <Grid container>
         {neos && (
           <div className={classes.accordionContainer}>
-            {Object.keys(neos).map((key: string) => (
-              <Accordion key={key}>
-                <AccordionSummary
-                  expandIcon={<ExpandMoreIcon />}
-                  aria-controls='panel1a-content'
-                  id='panel1a-header'
-                >
-                  <p>{formatDate(new Date(key), "MM/dd/yyyy")}</p>
-                </AccordionSummary>
-                <AccordionDetails>
-                  <DenseTable rows={neos[key]} />
-                </AccordionDetails>
-              </Accordion>
-            ))}
+            {Object.keys(neos)
+              .sort()
+              .map((key: string) => (
+                <Accordion key={key}>
+                  <AccordionSummary
+                    expandIcon={<ExpandMoreIcon />}
+                    aria-controls='panel1a-content'
+                    id='panel1a-header'
+                  >
+                    <p>{key}</p>
+                  </AccordionSummary>
+                  <AccordionDetails>
+                    <DenseTable rows={neos[key]} />
+                  </AccordionDetails>
+                </Accordion>
+              ))}
           </div>
         )}
       </Grid>
